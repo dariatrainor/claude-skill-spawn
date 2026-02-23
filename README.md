@@ -6,7 +6,7 @@ A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that spawn
 
 - Takes a prompt describing the task for the new session
 - Creates a git worktree with an auto-derived name
-- Opens a new iTerm2 tab running `claude -w <worktree> "<prompt>"`
+- Opens a new iTerm2 tab running `claude -w <worktree> '<prompt>'`
 - Lets you work on parallel tasks without leaving your current session
 
 ## Requirements

@@ -17,7 +17,7 @@ Spawn a new Claude Code session in a separate git worktree, opening it in a new 
 
 2. **Derive a worktree name.** Take the first 3-4 words of `$ARGUMENTS`, lowercase them, replace non-alphanumeric characters with hyphens, collapse multiple hyphens, trim leading/trailing hyphens, and truncate to 30 characters (trimming at the last hyphen boundary to avoid cutting mid-word). Example: "Fix linting issues in auth module" -> `fix-linting-issues-in`.
 
-3. **Check for worktree name collision.** Run `git worktree list` and check if the derived name already exists. If it does, append `-2` (or `-3`, etc.) until the name is unique.
+3. **Check for worktree name collision.** Run `git worktree list` and check if any worktree path ends with the derived name (match against the basename of each path). If it does, append `-2` (or `-3`, etc.) until the name is unique.
 
 4. **Get the current working directory.** Run `pwd` via Bash. Store the result as `CWD`.
 
@@ -52,6 +52,15 @@ Spawn a new Claude Code session in a separate git worktree, opening it in a new 
    ```
 
    **Escaping for the AppleScript layer:** The `write text` value sits inside an AppleScript double-quoted string. Within COMMAND_STRING, escape any literal `\` as `\\` and any literal `"` as `\"`. The single quotes from step 5 need no escaping here — they are just characters inside the AppleScript double-quoted string.
+
+   **Example with special characters:** If the shell command from step 5 is:
+   ```
+   cd /Users/me/project && claude -w fix-path-issue 'Fix the C:\Users path "bug"'
+   ```
+   Then COMMAND_STRING inside `write text` becomes:
+   ```
+   cd /Users/me/project && claude -w fix-path-issue 'Fix the C:\\Users path \"bug\"'
+   ```
 
    **MANDATORY CHECK before running:** Visually confirm the `write text` value starts with `cd /`. If it does not start with `cd /`, you have forgotten the cd — fix it before running.
 
