@@ -17,15 +17,14 @@ A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that spawn
 
 ## Installation
 
-Add this skill to your Claude Code configuration by referencing this repo. For example, in your `.claude/settings.json`:
+From within a Claude Code session:
 
-```json
-{
-  "skills": [
-    "github:dariatrainor/claude-skill-bg"
-  ]
-}
 ```
+/plugin marketplace add dariatrainor/claude-skill-bg
+/plugin install bg
+```
+
+Or manually — copy `skills/bg/SKILL.md` into `~/.claude/skills/bg/SKILL.md` (personal) or `.claude/skills/bg/SKILL.md` (per-project).
 
 ## Usage
 
