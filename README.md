@@ -35,4 +35,4 @@ From within a Claude Code session:
 /bg Fix the authentication bug in the login flow
 ```
 
-This will open a new iTerm2 tab with a Claude session working in a dedicated worktree.
+This will open a new iTerm2 tab with a Claude session working in a dedicated worktree. The new terminal tab opens in the same working directory as the parent session.
