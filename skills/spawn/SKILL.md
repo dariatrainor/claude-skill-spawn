@@ -1,5 +1,5 @@
 ---
-name: bg
+name: spawn
 description: Spawn a background Claude session in a new git worktree. Opens in a new iTerm2 tab.
 user-invocable: true
 disable-model-invocation: true
