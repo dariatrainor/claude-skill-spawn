@@ -39,7 +39,7 @@ Spawn a new Claude Code session in a separate git worktree, opening it in a new 
    cd /Users/me/project && claude -w fix-the-users-auth 'Fix the user'\''s auth bug'
    ```
 
-6. **Launch in a new iTerm2 tab.** Pass the command string from step 5 as the `write text` value. The osascript MUST look like this (with the FULL command from step 5 as COMMAND_STRING):
+6. **Launch in a new iTerm2 tab.** Run the following osascript command **exactly once**. Do NOT retry, verify, or run it again — a single execution is all that is needed. Pass the command string from step 5 as the `write text` value. The osascript MUST look like this (with the FULL command from step 5 as COMMAND_STRING):
    ```bash
    osascript -e 'tell application "iTerm2"
      tell current window
@@ -64,7 +64,7 @@ Spawn a new Claude Code session in a separate git worktree, opening it in a new 
 
    **MANDATORY CHECK before running:** Visually confirm the `write text` value starts with `cd /`. If it does not start with `cd /`, you have forgotten the cd — fix it before running.
 
-7. **Report back.** Tell the user:
+7. **Report back and stop.** Tell the user the following, then stop — do not run any more commands:
    - The worktree name that was created
    - That the session is running in a new iTerm2 tab
    - They can switch to that tab to interact with it
