@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "spawn",
-      "source": ".",
+      "source": "./",
       "description": "Spawn a background Claude session in a new git worktree. Opens in a new iTerm2 tab."
     }
   ]
