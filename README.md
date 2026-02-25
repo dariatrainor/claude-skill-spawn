@@ -9,6 +9,19 @@ A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that spawn
 - Opens a new iTerm2 tab running `claude -w <worktree> '<prompt>'`
 - Lets you work on parallel tasks without leaving your current session
 
+## How worktrees work
+
+`claude -w` creates a git worktree branched from the **default remote branch** (e.g. `main`), not from your current branch. This means:
+
+- Uncommitted changes in your working tree are **not** carried over
+- Commits on your current branch are **not** included either
+- The worktree gets its own branch named `worktree-<name>`
+- If no changes are made, the worktree is cleaned up automatically on exit
+- If changes exist, Claude prompts you to keep or remove the worktree
+- Kept worktrees can be resumed later via `/resume`
+
+You may need to run `npm install` (or equivalent) in the new worktree since `node_modules` and other generated files won't be shared.
+
 ## Requirements
 
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
