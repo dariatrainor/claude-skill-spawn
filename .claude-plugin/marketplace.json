@@ -1,0 +1,13 @@
+{
+  "name": "claude-skill-spawn",
+  "owner": {
+    "name": "Daria Trainor"
+  },
+  "plugins": [
+    {
+      "name": "spawn",
+      "source": ".",
+      "description": "Spawn a background Claude session in a new git worktree. Opens in a new iTerm2 tab."
+    }
+  ]
+}
