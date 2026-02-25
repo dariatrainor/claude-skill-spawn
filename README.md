@@ -1,12 +1,12 @@
 # spawn — Background Claude Session Skill
 
-A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that spawns a new Claude session in a separate git worktree, opening it in a new iTerm2 tab. Use it when you have an idea that doesn't belong on your current branch — kick it off in the background without breaking your flow.
+A [Claude Code](https://code.claude.com) skill that spawns a new Claude session in a separate git worktree, opening it in a new iTerm2 tab. Use it when you have an idea that doesn't belong on your current branch — kick it off in the background without breaking your flow.
 
 ## What it does
 
 - Takes a prompt describing the task for the new session
 - Creates a git worktree with an auto-derived name
-- Opens a new iTerm2 tab running `claude -w <worktree> '<prompt>'`
+- Opens a new iTerm2 tab running `claude -w <name> '<prompt>'`
 - Lets you work on parallel tasks without leaving your current session
 
 ## How worktrees work
@@ -15,7 +15,7 @@ A [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skill that spawn
 
 - Uncommitted changes in your working tree are **not** carried over
 - Commits on your current branch are **not** included either
-- The worktree gets its own branch named `worktree-<name>`
+- The worktree gets its own branch named `worktree-<name>` (the `worktree-` prefix is added by `claude -w` automatically)
 - If no changes are made, the worktree is cleaned up automatically on exit
 - If changes exist, Claude prompts you to keep or remove the worktree
 - Kept worktrees can be resumed later via `/resume`
@@ -24,7 +24,7 @@ You may need to run `npm install` (or equivalent) in the new worktree since `nod
 
 ## Requirements
 
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI
+- [Claude Code](https://code.claude.com) CLI
 - [iTerm2](https://iterm2.com/)
 - macOS (uses `osascript`)
 

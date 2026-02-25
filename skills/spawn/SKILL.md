@@ -17,7 +17,7 @@ Spawn a new Claude Code session in a separate git worktree, opening it in a new 
 
 2. **Check for uncommitted changes.** Run `git status --porcelain`. If the output is non-empty, warn the user that there are uncommitted changes that won't be included in the spawned worktree. Also note that `claude -w` branches from the default remote branch (e.g. `main`), not from the current branch — so any local branch commits won't be present either. Suggest they commit or stash first if the spawned task depends on those changes. Then continue with the spawn — do not block.
 
-3. **Derive a worktree name.** Take the first 3-4 words of `$ARGUMENTS`, lowercase them, replace non-alphanumeric characters with hyphens, collapse multiple hyphens, trim leading/trailing hyphens, and truncate to 30 characters (trimming at the last hyphen boundary to avoid cutting mid-word). Example: "Fix linting issues in auth module" -> `fix-linting-issues-in`.
+3. **Derive a worktree name.** Take the first 4 words of `$ARGUMENTS`, lowercase them, replace non-alphanumeric characters with hyphens, collapse multiple hyphens, trim leading/trailing hyphens, and truncate to 30 characters (trimming at the last hyphen boundary to avoid cutting mid-word). Example: "Fix linting issues in auth module" -> `fix-linting-issues-in`.
 
 4. **Check for worktree name collision.** Run `git worktree list` and check if any worktree path ends with the derived name (match against the basename of each path). If it does, append `-2` (or `-3`, etc.) until the name is unique.
 
@@ -67,7 +67,7 @@ Spawn a new Claude Code session in a separate git worktree, opening it in a new 
    **MANDATORY CHECK before running:** Visually confirm the `write text` value starts with `cd /`. If it does not start with `cd /`, you have forgotten the cd — fix it before running.
 
 8. **Report back and stop.** Tell the user the following, then stop — do not run any more commands:
-   - The worktree name that was created
+   - The worktree name that was passed to `claude -w` (note: `claude -w` automatically prefixes the branch with `worktree-`, e.g. passing `fix-auth-bug` creates a branch called `worktree-fix-auth-bug`)
    - That the session is running in a new iTerm2 tab
    - They can switch to that tab to interact with it
    - The worktree is automatically cleaned up if no changes are made. If changes exist, Claude will prompt whether to keep or remove it.

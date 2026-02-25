@@ -1,11 +1,11 @@
 {
-  "name": "bg",
+  "name": "spawn",
   "description": "Spawn a background Claude session in a new git worktree. Opens in a new iTerm2 tab.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": {
     "name": "Daria Trainor"
   },
-  "homepage": "https://github.com/dariatrainor/claude-skill-bg",
-  "repository": "https://github.com/dariatrainor/claude-skill-bg",
+  "homepage": "https://github.com/dariatrainor/claude-skill-spawn",
+  "repository": "https://github.com/dariatrainor/claude-skill-spawn",
   "license": "MIT"
 }
