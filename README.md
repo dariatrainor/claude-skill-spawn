@@ -1,12 +1,13 @@
 # spawn — Background Claude Session Skill
 
-A [Claude Code](https://code.claude.com) skill that spawns a new Claude session in a separate git worktree, opening it in a new iTerm2 tab. Use it when you have an idea that doesn't belong on your current branch — kick it off in the background without breaking your flow.
+A [Claude Code](https://code.claude.com) skill that spawns a new Claude session in a separate git worktree, opening it in a new tmux window or iTerm2 tab. Use it when you have an idea that doesn't belong on your current branch — kick it off in the background without breaking your flow.
 
 ## What it does
 
 - Takes a prompt describing the task for the new session
 - Creates a git worktree with an auto-derived name
-- Opens a new iTerm2 tab running `claude -w <name> '<prompt>'`
+- Opens a new tmux window or iTerm2 tab running `claude -w <name> '<prompt>'`
+- Auto-detects tmux vs iTerm2 — no configuration needed
 - Lets you work on parallel tasks without leaving your current session
 
 ## How worktrees work
@@ -22,11 +23,14 @@ A [Claude Code](https://code.claude.com) skill that spawns a new Claude session 
 
 You may need to run `npm install` (or equivalent) in the new worktree since `node_modules` and other generated files won't be shared.
 
+**Important:** To trigger the automatic cleanup, exit the spawned session gracefully with `/exit` or `Ctrl-C`. If you close the tab or window directly, the Claude process is killed without running cleanup and the worktree will be left behind. To clean up stale worktrees manually, run `git worktree list` and then `git worktree remove <path>` for each one.
+
 ## Requirements
 
 - [Claude Code](https://code.claude.com) CLI
-- [iTerm2](https://iterm2.com/)
-- macOS (uses `osascript`)
+- One of:
+  - [tmux](https://github.com/tmux/tmux) — works on macOS, Linux, and SSH sessions. Auto-selected when `$TMUX` is set.
+  - [iTerm2](https://iterm2.com/) + macOS — used as the fallback when not in a tmux session.
 
 ## Installation
 
@@ -37,7 +41,7 @@ From within a Claude Code session:
 /plugin install spawn
 ```
 
-Or manually — copy `skills/spawn/SKILL.md` into `~/.claude/skills/spawn/SKILL.md` (personal) or `.claude/skills/spawn/SKILL.md` (per-project).
+Or manually — copy the `skills/spawn/` directory (including `SKILL.md` and `spawn.sh`) into `~/.claude/skills/spawn/` (personal) or `.claude/skills/spawn/` (per-project). Make sure `spawn.sh` is executable (`chmod +x spawn.sh`).
 
 ## Usage
 
@@ -47,7 +51,7 @@ From within a Claude Code session:
 /spawn Fix the authentication bug in the login flow
 ```
 
-This will open a new iTerm2 tab with a Claude session working in a dedicated worktree. The new terminal tab opens in the same working directory as the parent session.
+This will open a new tmux window (or iTerm2 tab) with a Claude session working in a dedicated worktree. The new window opens in the same working directory as the parent session.
 
 ## Why use it
 

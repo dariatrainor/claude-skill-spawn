@@ -1,73 +1,32 @@
 ---
 name: spawn
-description: Spawn a background Claude session in a new git worktree. Opens in a new iTerm2 tab.
+description: Spawn a background Claude session in a new git worktree. Opens in a new tmux window or iTerm2 tab.
 user-invocable: true
 disable-model-invocation: true
-allowed-tools: Bash(claude *), Bash(git worktree *), Bash(git status *), Bash(osascript *), Bash(pwd)
+allowed-tools: Bash(*/.claude/skills/spawn/spawn.sh *)
 argument-hint: "<prompt for the new session>"
 ---
 
 # Background Claude Session
 
-Spawn a new Claude Code session in a separate git worktree, opening it in a new iTerm2 tab so you can interact with it directly.
+Spawn a new Claude Code session in a separate git worktree, opening it in a new tmux window or iTerm2 tab so you can interact with it directly.
 
 ## Steps
 
-1. **Require a prompt.** If `$ARGUMENTS` is empty, ask the user what the new session should work on. Do not proceed without a prompt.
+1. **Require a prompt.** If `$ARGUMENTS` is empty, ask the user what the new session should work on. Do not proceed without a prompt. If `$ARGUMENTS` is non-empty, accept it as-is — do NOT judge, rewrite, or reject the prompt. Any non-empty string is valid, even single words like "hi" or "test".
 
-2. **Check for uncommitted changes.** Run `git status --porcelain`. If the output is non-empty, warn the user that there are uncommitted changes that won't be included in the spawned worktree. Also note that `claude -w` branches from the default remote branch (e.g. `main`), not from the current branch — so any local branch commits won't be present either. Suggest they commit or stash first if the spawned task depends on those changes. Then continue with the spawn — do not block.
+2. **Derive a worktree name (pure logic — no tool call).** Take the first 4 words of `$ARGUMENTS`, lowercase them, replace non-alphanumeric characters with hyphens, collapse multiple hyphens, trim leading/trailing hyphens, and truncate to 30 characters (trimming at the last hyphen boundary to avoid cutting mid-word). Example: "Fix linting issues in auth module" -> `fix-linting-issues-in`. Store this as `SLUG`.
 
-3. **Derive a worktree name.** Take the first 4 words of `$ARGUMENTS`, lowercase them, replace non-alphanumeric characters with hyphens, collapse multiple hyphens, trim leading/trailing hyphens, and truncate to 30 characters (trimming at the last hyphen boundary to avoid cutting mid-word). Example: "Fix linting issues in auth module" -> `fix-linting-issues-in`.
-
-4. **Check for worktree name collision.** Run `git worktree list` and check if any worktree path ends with the derived name (match against the basename of each path). If it does, append `-2` (or `-3`, etc.) until the name is unique.
-
-5. **Get the current working directory.** Run `pwd` via Bash. Store the result as `CWD`.
-
-6. **Build the shell command string.** Construct this exact string (with substitutions):
-   ```
-   cd <CWD> && claude -w <SLUG> '<ESCAPED_PROMPT>'
-   ```
-   - `<CWD>` = absolute path from step 5
-   - `<SLUG>` = worktree name from step 3 (after collision check in step 4)
-   - `<ESCAPED_PROMPT>` = `$ARGUMENTS` with every single quote (`'`) replaced by `'\''` (end the single-quoted string, insert an escaped literal quote, restart the single-quoted string). No other escaping is needed — single-quoted strings in shell treat all characters literally.
-
-   **Example:** If CWD is `/Users/me/project`, slug is `fix-auth-bug`, and prompt is `Fix the auth bug`:
-   ```
-   cd /Users/me/project && claude -w fix-auth-bug 'Fix the auth bug'
-   ```
-
-   **Example with a single quote in the prompt:** prompt is `Fix the user's auth bug`:
-   ```
-   cd /Users/me/project && claude -w fix-the-users-auth 'Fix the user'\''s auth bug'
-   ```
-
-7. **Launch in a new iTerm2 tab.** Run the following osascript command **exactly once**. Do NOT retry, verify, or run it again — a single execution is all that is needed. Pass the command string from step 6 as the `write text` value. The osascript MUST look like this (with the FULL command from step 6 as COMMAND_STRING):
+3. **Launch.** Run a single Bash command:
    ```bash
-   osascript -e 'tell application "iTerm2"
-     tell current window
-       create tab with default profile
-       tell current session
-         write text "COMMAND_STRING"
-       end tell
-     end tell
-   end tell'
+   $SKILL_DIR/spawn.sh '<SLUG>' '<ESCAPED_PROMPT>'
    ```
+   Where `<ESCAPED_PROMPT>` is `$ARGUMENTS` with every single quote (`'`) replaced by `'\''`.
 
-   **Escaping for the AppleScript layer:** The `write text` value sits inside an AppleScript double-quoted string. Within COMMAND_STRING, escape any literal `\` as `\\` and any literal `"` as `\"`. The single quotes from step 6 need no escaping here — they are just characters inside the AppleScript double-quoted string.
+   The script handles everything: dirty-tree warnings, worktree name collision detection, terminal detection (tmux vs iTerm2), `cd` to the correct directory, and launching the session.
 
-   **Example with special characters:** If the shell command from step 6 is:
-   ```
-   cd /Users/me/project && claude -w fix-path-issue 'Fix the C:\Users path "bug"'
-   ```
-   Then COMMAND_STRING inside `write text` becomes:
-   ```
-   cd /Users/me/project && claude -w fix-path-issue 'Fix the C:\\Users path \"bug\"'
-   ```
-
-   **MANDATORY CHECK before running:** Visually confirm the `write text` value starts with `cd /`. If it does not start with `cd /`, you have forgotten the cd — fix it before running.
-
-8. **Report back and stop.** Tell the user the following, then stop — do not run any more commands:
-   - The worktree name that was passed to `claude -w` (note: `claude -w` automatically prefixes the branch with `worktree-`, e.g. passing `fix-auth-bug` creates a branch called `worktree-fix-auth-bug`)
-   - That the session is running in a new iTerm2 tab
-   - They can switch to that tab to interact with it
+4. **Report back and stop.** Relay the script's output to the user, then stop — do not run any more commands. Key info:
+   - The worktree name (note: `claude -w` automatically prefixes the branch with `worktree-`, e.g. passing `fix-auth-bug` creates a branch called `worktree-fix-auth-bug`)
+   - That the session is running in a **new tmux window** or **new iTerm2 tab**
+   - They can switch to that window/tab to interact with it
    - The worktree is automatically cleaned up if no changes are made. If changes exist, Claude will prompt whether to keep or remove it.
